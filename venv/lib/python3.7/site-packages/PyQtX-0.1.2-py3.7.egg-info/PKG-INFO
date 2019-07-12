@@ -1,0 +1,27 @@
+Metadata-Version: 1.0
+Name: PyQtX
+Version: 0.1.2
+Summary: Mimics the structure of PyQt5 but provides PyQt4 as a fallback solution.
+Home-page: http://pypi.python.org/pypi/PyQtX/
+Author: kpj
+Author-email: kpjkpjkpjkpjkpjkpj@gmail.com
+License: UNKNOWN
+Description: =====
+        PyQtX
+        =====
+        
+        Mimics the structure of PyQt5 but provides PyQt4 as a fallback solution.
+        
+        
+        Remarks
+        =======
+        
+        This project is still in a very early phase, so not everything is included. If you have any suggestions please post them to the issue tracker of the github page.
+        
+        
+        Links
+        =====
+        
+        * Github: https://github.com/kpj/PyQtX
+        * PyPi: https://pypi.python.org/pypi/PyQtX
+Platform: UNKNOWN

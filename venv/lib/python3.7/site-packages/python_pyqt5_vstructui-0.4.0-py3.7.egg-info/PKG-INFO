@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: python-pyqt5-vstructui
+Version: 0.4.0
+Summary: PyQt5 vstruct hex viewer widget.
+Home-page: https://github.com/williballenthin/python-pyqt5-vstructui
+Author: Willi Ballenthin
+Author-email: willi.ballenthin@gmail.com
+License: Apache 2.0 License
+Description: PyQt5 vstruct hex viewer widget.
+Platform: UNKNOWN

@@ -4,7 +4,9 @@ import numpy as np
 import pickle,sys
 
 
-scannum = -1
+scannum = 0
+
+pointnum = 0
 
 #Opening a serialised object
 filename = 'scanlist'
@@ -31,7 +33,8 @@ y_array = np.array([])
 def newscan(scannum):
     print('scan number : ',scannum)
     if(scannum <= scan_shape[0]):
-        return scanlist[scannum]
+
+        return scanlist[scannum][pointnum]
 
 
 
@@ -47,7 +50,7 @@ class MyWidget(pg.GraphicsWindow):
         self.setLayout(self.mainLayout)
 
         self.timer = QtCore.QTimer(self)
-        # self.timer.setInterval(5) # in milliseconds
+        self.timer.setInterval(3) # in milliseconds
         self.timer.start()
         self.timer.timeout.connect(self.onNewData)
 
@@ -59,13 +62,7 @@ class MyWidget(pg.GraphicsWindow):
 
     def setData(self, x, y):
 
-        print(x.shape,y.shape)
-
-        for z in range(len(x)):
-            A = np.array([x[z]])
-            B = np.array([y[z]])
-            # print(A,B)
-            self.plotDataItem.setData(A, B,pen='r')
+        self.plotDataItem.setData(x, y, pen='r')
 
 
 
@@ -73,14 +70,25 @@ class MyWidget(pg.GraphicsWindow):
     def onNewData(self):
 
         global scannum
-        scannum = scannum + 1
+        global pointnum
+        pointnum = pointnum + 1
+
+        if pointnum==1080:
+            scannum = scannum + 1
+
+            pointnum=0
+
         if scannum==scan_shape[0]-1:
             return
         if scannum==scan_shape[0]:
             print("End of scans")
             sys.exit()
         scan=newscan(scannum)
-        self.setData(scan[:,0], scan[:,1])
+
+        X = np.array(scan[0])
+        Y = np.array(scan[1])
+
+        self.setData(X,Y)
 
 
 

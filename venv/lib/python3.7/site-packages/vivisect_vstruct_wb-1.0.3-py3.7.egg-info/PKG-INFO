@@ -1,0 +1,12 @@
+Metadata-Version: 1.1
+Name: vivisect-vstruct-wb
+Version: 1.0.3
+Summary: Unofficial packaged vivisect vstruct mirror.
+Home-page: https://github.com/williballenthin/vivisect-vstruct
+Author: invisig0th, mirrored by Willi Ballenthin
+Author-email: willi.ballenthin@gmail.com
+License: UNKNOWN
+Description: Unofficial packaged vivisect vstruct mirror.
+Platform: UNKNOWN
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 2.7

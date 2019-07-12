@@ -1,0 +1,3 @@
+[console_scripts]
+vstructui = vstructui.scripts.vstructui_bin:main
+
