@@ -29,7 +29,7 @@ y_array = np.array([])
 
 colors = []
 
-for x in range(100):
+for x in range(20):
     colors.append('%06X' % randint(0, 0xFFFFFF))
 
 
@@ -58,7 +58,7 @@ class MyWidget(pg.GraphicsWindow):
         self.setLayout(self.mainLayout)
 
         self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(5) # in milliseconds
+        self.timer.setInterval(1) # in milliseconds
         self.timer.start()
         self.timer.timeout.connect(self.onNewData)
 
@@ -91,7 +91,7 @@ class MyWidget(pg.GraphicsWindow):
 
         centers = scan
         # Compute DBSCAN
-        db = DBSCAN(eps=100, min_samples=10).fit(centers)
+        db = DBSCAN(eps=150, min_samples=15).fit(centers)
         core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
         core_samples_mask[db.core_sample_indices_] = True
         labels = db.labels_
@@ -108,7 +108,7 @@ class MyWidget(pg.GraphicsWindow):
             index = labels == label
             cluster = scan[index]
             # print(cluster.shape)
-            c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='x', symbolPen=colors[label], name='red')
+            c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], name='red')
 
         # self.setData(scan[:,0], scan[:,1])
 
