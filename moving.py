@@ -8,8 +8,8 @@ import math
 from sklearn.ensemble import RandomForestClassifier
 import cv2
 
-modelname = 'rfcmodel'
-infile = open(modelname,'rb')
+filename = 'rfcmodel'
+infile = open(filename,'rb') # pickle.dump(scanlist,outfile)
 rfc = pickle.load(infile)
 scannum = -1
 
@@ -63,6 +63,7 @@ class MyWidget(pg.GraphicsWindow):
 
         global scannum
         self.plotItem.clear()
+        humans = 0
         scannum = scannum + 1
         if scannum==scan_shape[0]-1:
             return
@@ -286,27 +287,32 @@ class MyWidget(pg.GraphicsWindow):
             index = labels == label
             cluster = scan[index]
 
-            clus_max_x = max(cluster[:, 0]) + 20
-            clus_min_x = min(cluster[:, 0]) - 20
-            clus_max_y = max(cluster[:, 1]) + 20
-            clus_min_y = min(cluster[:, 1]) - 20
+            clus_max_x = max(cluster[:, 0]) + 200
+            clus_min_x = min(cluster[:, 0]) - 200
+            clus_max_y = max(cluster[:, 1]) + 200
+            clus_min_y = min(cluster[:, 1]) - 200
 
             features = getFeatures(cluster[:, 0], cluster[:, 1], cluster.shape[0])
 
+            c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], symbolSize=8)
+            txt = '\U0001f600'
+            tx1 = 'total humans detected =' + str(humans)
+            # text = pg.TextItem(html=txt, anchor=(0, 0), border='w', fill=(0, 0, 255, 100))
+            text = pg.TextItem(html=txt, anchor=(0, 0), border='w', fill=None)
 
             if (rfc.predict([features])==1):
+                humans += 1
                 clus_max_x = max(cluster[:, 0])
                 clus_min_x = min(cluster[:, 0])
                 clus_max_y = max(cluster[:, 1])
                 clus_min_y = min(cluster[:, 1])
-                print('Human Detected')
-
                 x1 = [clus_min_x ,clus_min_x, clus_max_x, clus_max_x, clus_min_x]
                 y1 = [clus_min_y ,clus_max_y, clus_max_y, clus_min_y, clus_min_y]
                 self.plotItem.plot(x1, y1, pen='r')
-                c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], symbolSize=5)
-
-
+                self.plotItem.addItem(text)
+                text.setPos(clus_max_x, clus_max_y)
+                print(clus_max_x,clus_max_y)
+                print('Humans in frame', humans)
 def main():
     app = QtWidgets.QApplication([])
 
