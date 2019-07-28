@@ -1,29 +1,23 @@
 from random import randint
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 import pyqtgraph as pg
 import numpy as np
 import pickle,sys
 from sklearn.cluster import DBSCAN
 import math
-from sklearn import metrics
-from sklearn.datasets.samples_generator import make_blobs
-from sklearn.preprocessing import StandardScaler
-import cv2 as cv2
+from sklearn.ensemble import RandomForestClassifier
+import cv2
 
-
+modelname = 'rfcmodel'
+infile = open(modelname,'rb')
+rfc = pickle.load(infile)
 scannum = -1
 
 #Opening a serialised object
-filename = 'scanlist'
+filename = 'Pickled files/p1'
 infile = open(filename,'rb') # pickle.dump(scanlist,outfile)
 scanlist = pickle.load(infile)
-
-print(scanlist.shape)
-
 scan_shape = scanlist.shape
-
-print(type(scan_shape))
-
 x_array = np.array([])
 y_array = np.array([])
 
@@ -31,12 +25,9 @@ y_array = np.array([])
 #-Data forming - End
 
 colors = []
-
 for x in range(20):
     colors.append('%06X' % randint(0, 0xFFFFFF))
 
-
-print(scanlist.flatten())
 
 scanlist_flat = scanlist.flatten()
 
@@ -45,7 +36,6 @@ def newscan(scannum):
     print('scan number : ',scannum)
     if(scannum <= scan_shape[0]):
         return scanlist[scannum]
-
 
 
 
@@ -62,21 +52,10 @@ class MyWidget(pg.GraphicsWindow):
         self.timer.start()
         self.timer.timeout.connect(self.onNewData)
 
-        self.plotItem = self.addPlot(title="Lidar points")
+        self.plotItem = self.addPlot(title='Postive \U0001f600')
         self.plotItem.getViewBox().setRange(xRange=(-3000,6000),yRange=(-6000,4000))
 
         self.plotDataItem = self.plotItem.plot([], pen=None,symbolBrush=(255,0,0), symbolSize=5, symbolPen=None)
-
-
-
-
-
-    def setData(self, x, y):
-
-
-
-        # self.plotDataItem.setData(x, y,pen='r')
-        return
 
 
 
@@ -105,6 +84,7 @@ class MyWidget(pg.GraphicsWindow):
         label_list = set(labels)
 
         def getFeatures(clust_x, clust_y, clustersize):
+
             x_mean = sum(clust_x)/clustersize
             y_mean = sum(clust_y)/clustersize
 
@@ -140,10 +120,8 @@ class MyWidget(pg.GraphicsWindow):
             points=np.array((clustersize,2))
 
             points2=np.vstack((clust_x,clust_y))
-            print('ff',points2.shape)
             points2=np.transpose(points2)
 
-            print('ff',points2.shape)
 
             W = np.zeros((2,2), np.float64)
             w = np.zeros((2,2), np.float64)
@@ -152,16 +130,12 @@ class MyWidget(pg.GraphicsWindow):
             V = np.zeros((2,2), np.float64)
 
             w,u,vt=cv2.SVDecomp(points2,W,U,V)
-            print('ww',w,W)
             rot_points = np.zeros((clustersize,2), np.float64)
 
             W[0,0]=w[0]
             W[1,1]=w[1]
             rot_points = np.matmul(u,W)
-            # print(w)
-            # print(u)
-            # print(vt)
-            # print(rot_points.shape)
+
 
             linearity=0
             for i in range(clustersize):
@@ -266,10 +240,13 @@ class MyWidget(pg.GraphicsWindow):
             mid   = 1
             last  = -1
 
+
             sum_iav = 0
             sum_iav_sq = 0
 
-            while(mid != clustersize):
+
+
+            while(mid < clustersize-1):
                 mlx = clust_x[first] -clust_x[mid]
                 mly = clust_y[first] -clust_y[mid]
 
@@ -285,13 +262,18 @@ class MyWidget(pg.GraphicsWindow):
                 if(th<0):
                     th += 2 * math.pi
 
+
                 sum_iav += th
+
                 sum_iav_sq += th*th
 
                 mid = mid+1
 
+
             iav = sum_iav/clustersize
             std_iav = math.sqrt((sum_iav_sq - pow(sum_iav, 2) / clustersize) / (clustersize - 1))
+
+
 
 
             features=[clustersize, std, avg_med_dev, width, linearity, circularity,
@@ -300,17 +282,29 @@ class MyWidget(pg.GraphicsWindow):
             return features
 
         for label in label_list:
+
             index = labels == label
             cluster = scan[index]
-            # print(cluster.shape)
-            c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], name='red', symbolSize=5)
+
+            clus_max_x = max(cluster[:, 0]) + 20
+            clus_min_x = min(cluster[:, 0]) - 20
+            clus_max_y = max(cluster[:, 1]) + 20
+            clus_min_y = min(cluster[:, 1]) - 20
+
             features = getFeatures(cluster[:, 0], cluster[:, 1], cluster.shape[0])
 
-        # self.setData(scan[:,0], scan[:,1])
 
-        # self.plotItem.setData(scan,pen='r')
+            if (rfc.predict([features])==1):
+                clus_max_x = max(cluster[:, 0])
+                clus_min_x = min(cluster[:, 0])
+                clus_max_y = max(cluster[:, 1])
+                clus_min_y = min(cluster[:, 1])
+                print('Human Detected')
 
-
+                x1 = [clus_min_x ,clus_min_x, clus_max_x, clus_max_x, clus_min_x]
+                y1 = [clus_min_y ,clus_max_y, clus_max_y, clus_min_y, clus_min_y]
+                self.plotItem.plot(x1, y1, pen='r')
+                c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], symbolSize=5)
 
 
 def main():
@@ -320,7 +314,6 @@ def main():
     pg.setConfigOption('background', 'w')
 
     win = MyWidget()
-    # win.setRange(xRange=(-2000,10000),yRange=(-8500,6000))
     win.show()
     win.resize(800,600)
     win.raise_()
