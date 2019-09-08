@@ -20,13 +20,17 @@ c = [1,2,3,4,5,6,7,8,9,10,11,12,13,14]
 
 
 featureslist = np.array(c)
+negativelist = np.array(c)
 
 featureslist = np.reshape(featureslist,(1,14))
+negativelist = np.reshape(featureslist,(1,14))
+
+
 
 scannum = -1
 
 #Opening a serialised object
-filename = 'Pickled files/p2'
+filename = 'Pickled files/p6'
 infile = open(filename,'rb') # pickle.dump(scanlist,outfile)
 scanlist = pickle.load(infile)
 scan_shape = scanlist.shape
@@ -36,10 +40,16 @@ y_array = np.array([])
 
 #-Data forming - End
 
-colors = []
+colors = ['A24FDE', '60E23E', '8A1C2B', '878A27', '24C5C7', 'A4D2BE', 'A302CA', '04573E', '5C1649', 'D2B4BB', '4E77CD', '4CC5BF', '9D81A3', '9ACB9F', '55EE56', '1A2B4C', 'F05A1A', '18E0D9', '73BA38', 'A2CA0A']
 
-for x in range(20):
-    colors.append('%06X' % randint(0, 0xFFFFFF))
+
+hcolor = ['A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD', 'A24FDD']
+
+
+
+# for x in range(20):
+#     colors.append('%06X' % randint(0, 0xFFFFFF))
+
 
 
 scanlist_flat = scanlist.flatten()
@@ -80,13 +90,19 @@ class MyWidget(pg.GraphicsWindow):
         if scannum==scan_shape[0]-1:
             return
         if scannum==scan_shape[0]:
-            global featureslist
+            global featureslist,negativelist
 
             print("End of scans")
-            filename = 'modelp2'
+            filename = 'modelp6'
             outfile = open(filename, 'wb')
             pickle.dump(featureslist, outfile)
             print(featureslist.shape)
+            filename = 'modeln4'
+            outfile = open(filename, 'wb')
+            pickle.dump(negativelist, outfile)
+            print(featureslist.shape)
+            print(negativelist.shape)
+
             print("--- %s Time taken ---" % (time.time() - start_time))
             print('completed......')
             sys.exit()
@@ -319,21 +335,29 @@ class MyWidget(pg.GraphicsWindow):
 
             # x_displayed = xy_dat[((xy_dat[:, 0] > min) & (xy_dat[:, 0] < max))]
 
-            x1 = [2350, 2350, 6000, 6000, 2350]
-            y1 = [-10000, 4500, 4500, -10000, -10000]
+            x1 = [0, 20, 3250, 3500, 0]
+            y1 = [-2000, 10, 300, -1000, -2000]
 
             self.plotItem.plot(x1,y1,pen='r')
             # c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], name='red', symbolSize=5)
 
 
-            # print(cluster[cluster[:,0] > ])
             # c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], name='red', symbolSize=5)
-            if np.all(cluster[:, 0] > 2350) & np.all(cluster[:, 0] < 6000):
-                if np.all(cluster[:, 1] > -10000) & np.all(cluster[:, 1] < 4500):
-                    c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], symbolSize=5)
+
+            if np.all(cluster[:, 0] > 0) & np.all(cluster[:, 0] < 3500):
+                if np.all(cluster[:, 1] > -2000) & np.all(cluster[:, 1] < 300):
+                    c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=hcolor[label],name='red', symbolSize=5)
+                    # print(np.average(cluster[:, 0]),np.average(cluster[:, 1]))
+
                     features = getFeatures(cluster[:, 0], cluster[:, 1], cluster.shape[0])
                     print('Detected - D')
                     featureslist = np.append(featureslist, np.array(features).reshape(1, 14), axis=0)
+                    print(featureslist.shape)
+            else:
+                    features = getFeatures(cluster[:, 0], cluster[:, 1], cluster.shape[0])
+                    negativelist = np.append(negativelist, np.array(features).reshape(1, 14), axis=0)
+                    print(negativelist.shape)
+
 
 
 

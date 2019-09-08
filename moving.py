@@ -4,17 +4,22 @@ import pyqtgraph as pg
 import numpy as np
 import pickle,sys
 from sklearn.cluster import DBSCAN
+
 import math
 from sklearn.ensemble import RandomForestClassifier
 import cv2
 
-filename = 'rfcmodel'
-infile = open(filename,'rb') # pickle.dump(scanlist,outfile)
+filename = 'rfcmodel2'
+infile = open(filename,'rb') # pickle.dump(scanlist,outfil# e)
 rfc = pickle.load(infile)
+
+humans = 0
 scannum = -1
+totalcnt = 0
+
 
 #Opening a serialised object
-filename = 'Pickled files/p1'
+filename = 'Pickled files/p6'  #Test TDataset used for detection and counting - Conists of 2 humans.
 infile = open(filename,'rb') # pickle.dump(scanlist,outfile)
 scanlist = pickle.load(infile)
 scan_shape = scanlist.shape
@@ -34,6 +39,7 @@ scanlist_flat = scanlist.flatten()
 
 def newscan(scannum):
     print('scan number : ',scannum)
+    print('total count =', totalcnt)
     if(scannum <= scan_shape[0]):
         return scanlist[scannum]
 
@@ -48,22 +54,25 @@ class MyWidget(pg.GraphicsWindow):
         self.setLayout(self.mainLayout)
 
         self.timer = QtCore.QTimer(self)
-        self.timer.setInterval(0) # in milliseconds
+        self.timer.setInterval(15) # in milliseconds
         self.timer.start()
         self.timer.timeout.connect(self.onNewData)
 
-        self.plotItem = self.addPlot(title='Postive \U0001f600')
+        self.plotItem = self.addPlot(title='HUMAN DETECTION AND COUNTING \U0001f600')
         self.plotItem.getViewBox().setRange(xRange=(-3000,6000),yRange=(-6000,4000))
 
         self.plotDataItem = self.plotItem.plot([], pen=None,symbolBrush=(255,0,0), symbolSize=5, symbolPen=None)
 
 
 
-    def onNewData(self):
+    def onNewData(self):   #Each scan is passed through
 
         global scannum
         self.plotItem.clear()
+
+        global humans
         humans = 0
+
         scannum = scannum + 1
         if scannum==scan_shape[0]-1:
             return
@@ -84,7 +93,7 @@ class MyWidget(pg.GraphicsWindow):
         n_noise_ = list(labels).count(-1)
         label_list = set(labels)
 
-        def getFeatures(clust_x, clust_y, clustersize):
+        def getFeatures(clust_x, clust_y, clustersize): #Feature extraction - 14 features
 
             x_mean = sum(clust_x)/clustersize
             y_mean = sum(clust_y)/clustersize
@@ -260,6 +269,7 @@ class MyWidget(pg.GraphicsWindow):
 
                 th = math.atan2(B, A)
 
+
                 if(th<0):
                     th += 2 * math.pi
 
@@ -282,8 +292,7 @@ class MyWidget(pg.GraphicsWindow):
                                 distance, distance/clustersize]
             return features
 
-        for label in label_list:
-
+        for label in label_list:  #Looping through the clusters in each scan
             index = labels == label
             cluster = scan[index]
 
@@ -291,17 +300,32 @@ class MyWidget(pg.GraphicsWindow):
             clus_min_x = min(cluster[:, 0]) - 200
             clus_max_y = max(cluster[:, 1]) + 200
             clus_min_y = min(cluster[:, 1]) - 200
+            global totalcnt
 
             features = getFeatures(cluster[:, 0], cluster[:, 1], cluster.shape[0])
 
             c1 = self.plotItem.plot(cluster[:, 0], cluster[:, 1], symbol='o', symbolPen=colors[label], symbolSize=8)
-            txt = '\U0001f600'
-            tx1 = 'total humans detected =' + str(humans)
+            txt = '\U0001f600' + '-' + str(humans)
+            txt1 = 'total humans detected =' + str(totalcnt)
             # text = pg.TextItem(html=txt, anchor=(0, 0), border='w', fill=(0, 0, 255, 100))
-            text = pg.TextItem(html=txt, anchor=(0, 0), border='w', fill=None)
+            label1 = pg.TextItem(html=txt1, anchor=(0, 0), border='w', fill=None)
 
-            if (rfc.predict([features])==1):
+            self.plotItem.addItem(label1)
+
+            label1.setPos(0,2000)   #Display count label
+
+            if (rfc.predict([features])==1) and features[0]>25 and features[4]< 700000:  #If cluster is human
+
                 humans += 1
+
+                temp = humans
+
+                totalcnt = max(temp,humans) #Keeps track of the total human count detected
+
+                txt = '\U0001f600' + '=' + str(humans) #Adding emoji and identification number
+
+                text = pg.TextItem(html=txt, anchor=(0, 0), border='w', fill=None)
+                print(features)
                 clus_max_x = max(cluster[:, 0])
                 clus_min_x = min(cluster[:, 0])
                 clus_max_y = max(cluster[:, 1])
@@ -311,8 +335,7 @@ class MyWidget(pg.GraphicsWindow):
                 self.plotItem.plot(x1, y1, pen='r')
                 self.plotItem.addItem(text)
                 text.setPos(clus_max_x, clus_max_y)
-                print(clus_max_x,clus_max_y)
-                print('Humans in frame', humans)
+
 def main():
     app = QtWidgets.QApplication([])
 

@@ -7,7 +7,7 @@ def cls():
 
 k = 0
 
-filepath="Pickled files/n1.csv"
+filepath="Pickled files/p5.csv"  #Change the name of the dataset here to serialise
 def parsecoord(coortxt):
     coortxt=coortxt[1:-2]
     xy=coortxt.split(';')
@@ -39,7 +39,7 @@ with open(filepath,"r") as file:
         cls()
         k = k + 1
 
-filename = 'n1'
+filename = 'p5'  #Name of the seraialised object
 outfile = open(filename,'wb')
 pickle.dump(scanlist,outfile)
 print('Data prepare complete')

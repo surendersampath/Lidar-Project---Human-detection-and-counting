@@ -1,0 +1,21 @@
+Metadata-Version: 1.1
+Name: hokuyolx
+Version: 0.9.0
+Summary: Module for working with Hokuyo LX laser scanners.
+Home-page: https://github.com/SkRobo/hokuyolx
+Author: Artyom Pavlov
+Author-email: newpavlov@gmail.com
+License: MIT
+Description: This module aims to implement communication protocol with Hokuyo laser rangefinder scaners, specifically with thefollowing models: UST-10LX, UST-20LX, UST-30LX. It was tested only with UST-10LX but should work with others as well. It's Python 2 and 3 compatible but was mainly tested using Python 3.
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: Microsoft
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: Unix
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: System :: Hardware
