@@ -1,5 +1,4 @@
-# lidarproj
-
+# SHUMAN COUNTING AND TRACKING USING LIDAR DATA
 
 ## About
 
