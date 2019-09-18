@@ -23,7 +23,6 @@ All project related code and files is present in the supporting materials along 
 
 ![](demo.gif)
 
-http://www.giphy.com/gifs/dt0N8kHaVrqGGkOTXP
 
 ## Contributing 
 
