@@ -13,8 +13,6 @@ A supervised machine learning model has been developed to classify the detected 
 Virtual Environment 
 
 Do refer the attached report to understand the project better.
-```
-
 
 ## How To Install and Run the Project :
 
@@ -27,3 +25,6 @@ All project related code and files is present in the supporting materials along 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
