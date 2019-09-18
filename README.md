@@ -13,6 +13,8 @@ A supervised machine learning model has been developed to classify the detected 
 Virtual Environment 
 
 Do refer the attached report to understand the project better.
+```
+
 
 ## How To Install and Run the Project :
 
