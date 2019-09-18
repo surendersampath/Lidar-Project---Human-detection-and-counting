@@ -19,7 +19,7 @@ Do refer the attached report to understand the project better.
 
 All project related code and files is present in the supporting materials along with the report. The entire project is created in the virtual python environment which can be activated and quickly run the application files without requiring any installation of libraries. There are three python files created to execute the three problem phases separately. The DATAPREPARE.py processes the dataset in the CSV format collected from the sensor where it converts the dataset into 2D array and serializes the object. This program is used to convert all collected training and test datasets. The feature_export.py reduces the dimensionality of the previous files and extracts features required to be fed to the model. The model_creator.py program is used to build the supervised machine learning model from the pickle files created in the previous program. The final program detection.py uses the model file and test data object from the previous programs. The pickled machine learning model file and the test data file is required for the detection.py to detect and display the human count. The serialised files of test and training data are provided in the folder ‘pickled files’. All important parts of the code are well documented with the comments and showcased on Github.
 
-DEMO
+## DEMO
 
 ![](demo.gif)
 
